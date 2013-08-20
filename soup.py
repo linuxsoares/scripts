@@ -25,7 +25,7 @@ try:
 		soup = BeautifulSoup(html_doc)
 
 		if soup.find(id="box1") == None:
-			print 'Verbo ' + verbo +' Inesistente!! Delete BD'
+			print 'Verbo ' + verbo +' Inexistente!! Delete BD'
 			nao_encontrados.write('Verbo ' + verbo +' Inexistente!! Delete BD. \n')
 		else:
 			#print (soup.find(id="box1").h4.string)
