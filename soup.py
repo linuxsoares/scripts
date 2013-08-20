@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup
 import MySQLdb
 
 #Arquivos TXT
-encontrados = open('/Users/gilmar/Documents/Projetos/verbos/encontrados.txt', 'w')
-nao_encontrados = open('/Users/gilmar/Documents/Projetos/verbos/verbos_encontrados.txt', 'w')
+encontrados = open('/Users/gilmar/Documents/Projetos/verbos/verbos_encontrados.txt', 'w')
+nao_encontrados = open('/Users/gilmar/Documents/Projetos/verbos/verbos_nao_encontrados.txt', 'w')
 
 try:
 	db = MySQLdb.connect(host='localhost' , port=3306 ,user='gilmar', passwd='', db='verbos')
