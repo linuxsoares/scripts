@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
- 
+# coding: utf-8
+
 import urllib
 from bs4 import BeautifulSoup
 import codecs
@@ -9,17 +9,21 @@ import types
 from unicodedata import normalize 
 
 #'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
-arrayLetras = ('c')
+arrayLetras = ('z')
 
 def remover_acentos(txt, codif='utf-8'):
-    return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore') 
+    return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore')
 
-def getConvertObjectSoup(url):
+def usarReplace(palavra):
+    return palavra.replace('não', '').replace('para ', '').replace('eu','').replace('voc','').replace(' ele/ela','').replace('vocs','').replace('tu','').replace('vs','').replace('no','').replace('ns','').replace('eles/elas','').replace('ele/ela','').replace(' s','').replace(' ','').replace('mês', '').replace('vós', '').replace('nós', '')
+
+
+def getConvertObjectSoup(url, codin='utf-8'):
     f = urllib.urlopen(url)
 
     html_doc = f.read()
 	
-    return BeautifulSoup(html_doc)
+    return BeautifulSoup(html_doc, from_encoding=codin)
 
 def getVerbos():
     verbos = file('verbos.txt', 'w')
@@ -104,23 +108,21 @@ def getVerbosConjugados(listaVerbos):
     cursor = db.cursor()
 
     try:
-
         for verbo in listaVerbos:
-            soup = getConvertObjectSoup('http://www.conjuga-me.net/verbo-'+verbo.encode('utf-8'))
-            print 'Verbo: '+verbo.strip()
+            print 'http://www.conjuga-me.net/verbo-'+verbo
+            soup = getConvertObjectSoup('http://www.conjuga-me.net/verbo-'+verbo, 'iso8859-1')
             
             for s in soup.find_all('td', attrs = { 'class' : 'output'}):
                 if s.text and s.text != None and s.text != '' and s.text != '\t' and s.text != '\n' and s.text != ' ':
-                    palavra = s.text.encode('ascii', 'ignore').replace('para ', '').replace('eu','').replace('voc','').replace(' ele/ela','').replace('vocs','').replace('tu','').replace('vs','').replace('no','').replace('ns','').replace('eles/elas','').replace('ele/ela','').replace(' s','').replace(' ','')
+                    palavra = usarReplace(s.text.encode('utf-8'))
                     cursor.execute('select id_verbos from verbos where nome = "'+ verbo.strip() +'"')
                     if palavra:
                         id_verbo = cursor.fetchone()
-                        print 'id_verbo: '+ str(id_verbo[0])
+                        print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
                         sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
                         db.commit()
                         cursor.execute(sql, (palavra, count[num], id_verbo[0]))
 
-                    
                     num += 1
                     if num == 3:
                        num = 0
@@ -134,11 +136,7 @@ def getVerbosConjugados(listaVerbos):
                     if contador == 72:
                         contador = 0
                         count = [1, 3, 2]
-                    #print palavra
-                        
-                #+ ' - ' + s.string
-                #if s.string and s.string != None and s.string != '' and s.string != '\t':
-                    #print s.string.encode('utf-8')
+
         cursor.close() 
     except Exception, e:
         print 'Erro ao verificar verbos.' + e.message
