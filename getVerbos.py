@@ -12,11 +12,11 @@ from email.mime.text import MIMEText
 from unicodedata import normalize 
 
 #'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
-arrayLetras = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
+arrayLetras = ('z')
 
 def enviaEmail(texto):
     sender = 'linux.soares@gmail.com'
-    receivers = ['linux.soares@gmail.com', 'pgluciano@gmail.com', 'gilmar.soares@autopass.com.br']
+    receivers = ['linux.soares@gmail.com']
     subject = 'Verbos - ConjugVerbos'
     texto = texto.upper()
     
@@ -135,6 +135,8 @@ def getVerbosConjugados(listaVerbos):
     count = [1, 3, 2]
     contador = 0
     num = 0
+    valida = [4, 7, 10, 13, 17]
+    count_valida = 0
     #cursor MySQL
     db = MySQLdb.connect(host='localhost' , port=3306 ,user='root', passwd='', db='verbos', use_unicode=1, charset='utf8')
     cursor = db.cursor()
@@ -148,12 +150,19 @@ def getVerbosConjugados(listaVerbos):
                 if s.text and s.text != None and s.text != '' and s.text != '\t' and s.text != '\n' and s.text != ' ' and s.text != '–' and s.text != ' - ':
                     palavra = usarReplace(s.text.encode('utf-8'))
                     cursor.execute('select id_verbos from verbos where nome = "'+ verbo.strip() +'"')
-                    if palavra and s.text != ' - ' and s.text != '   ':
+                    if palavra and re.search('[a-zA-Z]', palavra):
                         id_verbo = cursor.fetchone()
-                        print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
-                        sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
-                        db.commit()
-                        cursor.execute(sql, (palavra, count[num], id_verbo[0]))
+                        if count[0] == 10 and count_valida in valida:
+                            print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
+                            sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
+                            db.commit()
+                            cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
+                        if count[0] != 10 and count_valida not in valida:
+                            print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
+                            sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
+                            db.commit()
+                            cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
+
 
                     num += 1
                     if num == 3:
@@ -168,6 +177,12 @@ def getVerbosConjugados(listaVerbos):
                     if contador == 72:
                         contador = 0
                         count = [1, 3, 2]
+
+                    if count[0] == 10:
+                        count_valida += 1
+                    if  count_valida > 17:
+                        count_valida = 0
+
 
         cursor.close() 
     except Exception, e:
