@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from unicodedata import normalize 
 
 #'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
-arrayLetras = ('z')
+arrayLetras = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
 
 def enviaEmail(texto):
     sender = 'linux.soares@gmail.com'
@@ -135,7 +135,7 @@ def getVerbosConjugados(listaVerbos):
     count = [1, 3, 2]
     contador = 0
     num = 0
-    valida = [4, 7, 10, 13, 17]
+    valida = [4, 7, 10, 13, 16]
     count_valida = 0
     #cursor MySQL
     db = MySQLdb.connect(host='localhost' , port=3306 ,user='root', passwd='', db='verbos', use_unicode=1, charset='utf8')
@@ -157,7 +157,7 @@ def getVerbosConjugados(listaVerbos):
                             sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
                             db.commit()
                             cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
-                        if count[0] != 10 and count_valida not in valida:
+                        if count[0] != 10:
                             print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
                             sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
                             db.commit()
@@ -178,9 +178,9 @@ def getVerbosConjugados(listaVerbos):
                         contador = 0
                         count = [1, 3, 2]
 
-                    if count[0] == 10:
+                    if count[0] == 10 and count[1] == 10 and count[2] == 10:
                         count_valida += 1
-                    if  count_valida > 17:
+                    if  count_valida == 18:
                         count_valida = 0
 
 
