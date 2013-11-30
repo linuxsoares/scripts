@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from unicodedata import normalize 
 
 #'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
-arrayLetras = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
+arrayLetras = ('z')
 
 def enviaEmail(texto):
     sender = 'linux.soares@gmail.com'
@@ -41,9 +41,11 @@ def remover_acentos(txt, codif='utf-8'):
     return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore')
 
 def usarReplace(palavra):
-    palavra = palavra.replace('não', '').replace('para ', '').replace('eu','').replace('voc','').replace(' ele/ela','').replace('vocs','').replace('tu','').replace('vs','').replace('no','').replace('ns','').replace('eles/elas','').replace('ele/ela','').replace(' s','').replace(' ','').replace('ês', '').replace('vós', '').replace('nós', '')
+    #palavra = palavra.replace('não', '').replace('para ', '').replace('eu','').replace('voc','').replace(' ele/ela','').replace('vocs','').replace('tu','').replace('vs','').replace('no','').replace('ns','').replace('eles/elas','').replace('ele/ela','').replace(' s','').replace(' ','').replace('ês', '').replace('vós', '').replace('nós', '')
+    pattern = re.compile('[ / ]([ a-zà-ú]+)$') 
+    palavra_new = re.sub(pattern, '', palavra)
     pattern = re.compile('(ê)$')
-    return  re.sub(pattern, '', palavra)
+    return re.sub(pattern, '', palavra_new)
 
 
 def getConvertObjectSoup(url, codin='utf-8'):
