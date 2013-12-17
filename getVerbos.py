@@ -11,8 +11,9 @@ from smtplib import SMTPException
 from email.mime.text import MIMEText
 from unicodedata import normalize 
 
-#'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
-arrayLetras = ('z')
+#
+# Executadas - 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w'
+arrayLetras = ('x','y','z')
 
 def enviaEmail(texto):
     sender = 'linux.soares@gmail.com'
@@ -41,7 +42,6 @@ def remover_acentos(txt, codif='utf-8'):
     return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore')
 
 def usarReplace(palavra):
-    #palavra = palavra.replace('não', '').replace('para ', '').replace('eu','').replace('voc','').replace(' ele/ela','').replace('vocs','').replace('tu','').replace('vs','').replace('no','').replace('ns','').replace('eles/elas','').replace('ele/ela','').replace(' s','').replace(' ','').replace('ês', '').replace('vós', '').replace('nós', '')
     pattern = re.compile('[ / ]([ a-zà-ú]+)$') 
     palavra_new = re.sub(pattern, '', palavra)
     pattern = re.compile('(ê)$')
@@ -149,41 +149,42 @@ def getVerbosConjugados(listaVerbos):
             soup = getConvertObjectSoup('http://www.conjuga-me.net/verbo-'+verbo, 'iso8859-1')
             
             for s in soup.find_all('td', attrs = { 'class' : 'output'}):
-                if s.text and s.text != None and s.text != '' and s.text != '\t' and s.text != '\n' and s.text != ' ' and s.text != '–' and s.text != ' - ':
-                    palavra = usarReplace(s.text.encode('utf-8'))
-                    cursor.execute('select id_verbos from verbos where nome = "'+ verbo.strip() +'"')
-                    if palavra and re.search('[a-zA-Z]', palavra):
-                        id_verbo = cursor.fetchone()
-                        if count[0] == 10 and count_valida in valida:
-                            print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
-                            sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
-                            db.commit()
-                            cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
-                        if count[0] != 10:
-                            print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
-                            sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
-                            db.commit()
-                            cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
+                #if s.text and s.text != None and s.text != '' and s.text != '\t' and s.text != '\n' and s.text != ' ' and s.text != '–' and s.text != ' - ':
+                palavra = usarReplace(s.text.encode('utf-8'))
+                cursor.execute('select id_verbos from verbos where nome = "'+ verbo.strip() +'"')
+                #if palavra and re.search('[a-zA-Z]', palavra):
+                #if re.search('[a-zA-Z\s]', palavra):
+                id_verbo = cursor.fetchone()
+                if count[0] == 10 and count_valida in valida:
+                    print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
+                    sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
+                    db.commit()
+                    cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
+                if count[0] != 10:
+                    print 'id_verbo: '+ str(id_verbo[0]) + ' - ' + palavra
+                    sql = 'insert into conjulgacao_verbal (nome_conjulgacao, id_tempo_verbal, id_verbo) value (%s, %s, %s)'
+                    db.commit()
+                    cursor.execute(sql, (palavra, count[num], id_verbo[0]))    
 
 
-                    num += 1
-                    if num == 3:
-                       num = 0
-                    contador += 1
-                    if contador == 18:
-                        count = [4, 6, 5]
-                    if contador == 36:
-                        count = [7, 9, 8]
-                    if contador == 54:
-                        count = [10, 10, 10]
-                    if contador == 72:
-                        contador = 0
-                        count = [1, 3, 2]
+                num += 1
+                if num == 3:
+                   num = 0
+                contador += 1
+                if contador == 18:
+                    count = [4, 6, 5]
+                if contador == 36:
+                    count = [7, 9, 8]
+                if contador == 54:
+                    count = [10, 10, 10]
+                if contador == 72:
+                    contador = 0
+                    count = [1, 3, 2]
 
-                    if count[0] == 10 and count[1] == 10 and count[2] == 10:
-                        count_valida += 1
-                    if  count_valida == 18:
-                        count_valida = 0
+                if count[0] == 10 and count[1] == 10 and count[2] == 10:
+                    count_valida += 1
+                if  count_valida == 18:
+                    count_valida = 0
 
 
         cursor.close() 
