@@ -1,0 +1,13 @@
+SET dirname="%date:~6,4%-%date:~3,2%-%date:~0,2%"
+
+SET dataname="%date:~6,4%%date:~3,2%%date:~0,2%"
+
+mkdir C:\Users\USUARIO\DIRETORIO\%dirname%
+
+ROBOCOPY C:\Users\USUARIO\DIRETORIO C:\Users\USUARIO\DIRETORIO\\%dirname% /maxage:%dataname% /e
+
+zip -r C:\Users\USUARIO\DIRETORIO\\%dirname%.zip C:\Users\USUARIO\DIRETORIO\\%dirname%
+
+del C:\Users\USUARIO\DIRETORIO\\%dirname%\*.* /S /F /Q
+
+RMDIR /S /Q C:\Users\USUARIO\DIRETORIO\\%dirname%\
